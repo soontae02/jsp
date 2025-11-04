@@ -2,6 +2,8 @@ package com.coding404.myweb.contorller;
 
 import com.coding404.myweb.command.TopicVO;
 import com.coding404.myweb.topic.TopicService;
+import com.coding404.myweb.util.Criteria;
+import com.coding404.myweb.util.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -23,10 +25,17 @@ public class TopicController {
     private TopicService topicService;
 
     @GetMapping("/topicListAll")
-    public String topicListAll(Model model){
-        String topicWriter = "admin";
-        List<TopicVO> list = topicService.getList(topicWriter);
-        model.addAttribute("list",list);
+    public String topicListAll(Criteria cri, Model model){
+
+        List<TopicVO> list = topicService.getList(cri);
+        int total = topicService.getTotal(cri);
+
+        PageVO pageVO = new PageVO(cri, total);
+
+        model.addAttribute("list", list);
+        model.addAttribute("pageVO", pageVO);
+        model.addAttribute("cri", cri);
+
         return "topic/topicListAll";
     }
 

@@ -25,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public int getTotal(String prodWriter, Criteria cri) {
+        return productMapper.getTotal(prodWriter, cri);
+    }
+
+    @Override
     public ProductVO getDetail(long prodId) {
         return productMapper.getDetail(prodId);
     }

@@ -18,11 +18,33 @@
                 0)
     </insert>
 
-    <select id="getList" resultType="TopicVO" parameterType="string">
+    <select id="getList" resultType="TopicVO" parameterType="Criteria">
         SELECT *
         FROM TOPIC
-        WHERE TOPIC_WRITER = #{param1}  ORDER BY TOPIC_ID DESC
-            LIMIT 0,10
+        WHERE 1=1
+
+        <if test="searchName != '' and searchName != null">
+            AND TOPIC_TITLE LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchContent != '' and searchContent != null">
+            AND TOPIC_WRITER LIKE CONCAT('%', #{searchContent}, '%')
+        </if>
+
+        ORDER BY TOPIC_ID DESC
+        LIMIT #{pageStart}, #{amount}
+    </select>
+
+    <select id="getTotal" resultType="int" parameterType="Criteria">
+        SELECT COUNT(*) AS total
+        FROM TOPIC
+        WHERE 1=1
+
+        <if test="searchName != '' and searchName != null">
+            AND TOPIC_TITLE LIKE CONCAT('%', #{searchName}, '%')
+        </if>
+        <if test="searchContent != '' and searchContent != null">
+            AND TOPIC_WRITER LIKE CONCAT('%', #{searchContent}, '%')
+        </if>
     </select>
 
     <select id="getDetail" parameterType="long" resultType="TopicVO">

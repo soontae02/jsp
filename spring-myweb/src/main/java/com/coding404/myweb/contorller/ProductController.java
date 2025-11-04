@@ -3,14 +3,12 @@ package com.coding404.myweb.contorller;
 import com.coding404.myweb.command.ProductVO;
 import com.coding404.myweb.product.ProductService;
 import com.coding404.myweb.util.Criteria;
+import com.coding404.myweb.util.PageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -25,13 +23,20 @@ public class ProductController {
 
     //목록화면
     @GetMapping("/productList")
-    public String productList(Criteria cri, Model model) {
+    public String productList(@ModelAttribute("cri") Criteria cri, Model model) {
         String prodWriter = "becy96"; //본인의 아이디라고 가정
+
+        System.out.println(cri.getPage());
 
         //List<ProductVO> prodList = productService.getList(prodWriter); //조회
         List<ProductVO> prodList = productService.getList(prodWriter, cri);
+        int total = productService.getTotal(prodWriter, cri); //전체게시글 수
+
+        PageVO pageVO = new PageVO(cri, total); //페이지네이션 계산
 
         model.addAttribute("prodList", prodList); //모델에 저장
+        model.addAttribute("pageVO", pageVO); //모델에 저장
+
         System.out.println(prodList.toString());
 
         return "product/productList";

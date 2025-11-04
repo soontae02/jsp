@@ -43,17 +43,17 @@
             <li class="sub_menu_toggle">
                 <a href="#">- 상품관리(예제)</a>
                 <ul class="sub_menu ">
-                    <li><a href="#">-상품등록</a></li>
-                    <li><a href="#">-상품조회 / 수정</a></li>
+                    <li><a th:href="@{/product/productReg}">-상품등록</a></li>
+                    <li><a th:href="@{/product/productList}">-상품조회 / 수정</a></li>
                     <li><a href="#">-하단메뉴</a></li>
                 </ul>
             </li>
             <li class="sub_menu_toggle">
                 <a href="#">- 게시글 연습(초급)</a>
                 <ul class="sub_menu">
-                    <li><a href="#">-전체 글목록</a></li>
-                    <li><a href="#">-글 등록</a></li>
-                    <li><a href="#">-내글 목록</a></li>
+                    <li><a th:href="@{/topic/topicListAll}">-전체 글목록</a></li>
+                    <li><a th:href="@{/topic/topicReg}">-글 등록</a></li>
+                    <li><a th:href="@{/topic/topicListMe}">-내글 목록</a></li>
                 </ul>
             </li>
             <li class="sub_menu_toggle">
@@ -92,20 +92,23 @@
 						</div>
 					</div>
 					<div class="page_title">관리자검색</div>
-					
-					<form name="searchForm" th:action="@{/topic/topicListAll}" method="get" >
-					<div class="search_block flfull">
 
-						<div class="fl">
-							<div>
-								<span class="search_th">제목 검색</span>
-								<input type="text" class="" placeholder="제목 검색">
-							</div>
+                    <form name="actionForm" th:action="@{/topic/topicListAll}" method="get" >
 
-							<div>
-								<span class="search_th">닉네임 검색</span>
-								<input type="text" class="" placeholder="닉네임 검색">
-							</div>
+                        <input type="hidden" name="page" value="1">
+                        <input type="hidden" name="amount" th:value="${pageVO.amount}">
+
+                        <div class="search_block flfull">
+                            <div class="fl">
+                                <div>
+                                    <span class="search_th">제목 검색</span>
+                                    <input type="text" class="" name="searchName" th:value="${cri.searchName}" placeholder="제목 검색">
+                                </div>
+
+                                <div>
+                                    <span class="search_th">닉네임 검색</span>
+                                    <input type="text" class="" name="searchContent" th:value="${cri.searchContent}" placeholder="닉네임 검색">
+                                </div>
 
 							<!-- 
 							<div>
@@ -169,23 +172,65 @@
                                         </table>
 
 
-										<div class="page">
-											<ul>
-												<li><a href="#"><i class="fa fa-angle-double-left"
-															aria-hidden="true"></i></a></li>
-												<li style="margin-right:5px;"><a href="#"><i class="fa fa-angle-left"
-															aria-hidden="true"></i></a></li>
-												<li class="on"><a href="#">1</a></li>
-												<li><a href="#">2</a></li>
-												<li><a href="#">3</a></li>
-												<li><a href="#">4</a></li>
-												<li><a href="#">5</a></li>
-												<li style="margin-left:5px;"><a href="#"><i class="fa fa-angle-right"
-															aria-hidden="true"></i></a></li>
-												<li><a href="#"><i class="fa fa-angle-double-right"
-															aria-hidden="true"></i></a></li>
-											</ul>
-										</div>
+                                        <div class="page">
+                                            <ul>
+                                                <li>
+                                                    <a th:href="@{topicListAll(page=1, amount=${pageVO.amount},
+                                                                                  searchName=${cri.searchName},
+                                                                                  searchContent=${cri.searchContent},
+                                                                                  searchPrice=${cri.searchPrice},
+                                                                                  startDate=${cri.startDate},
+                                                                                  endDate=${cri.endDate}
+                                                        )}"><i class="fa fa-angle-double-left" aria-hidden="true"></i></a>
+                                                </li>
+
+                                                <th:block th:if="${pageVO.prev}">
+                                                    <li style="margin-right:5px;">
+                                                        <a th:href="@{topicListAll(page=${pageVO.start - 1}, amount=${pageVO.amount},
+                                                                                  searchName=${cri.searchName},
+                                                                                  searchContent=${cri.searchContent},
+                                                                                  searchPrice=${cri.searchPrice},
+                                                                                  startDate=${cri.startDate},
+                                                                                  endDate=${cri.endDate}
+                                                                                  )}"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+                                                    </li>
+                                                </th:block>
+
+                                                <th:block th:each="page : ${pageVO.pageList}">
+                                                    <li class="${pageVO.page == page ? 'on' : '' }">
+                                                        <a th:href="@{topicListAll(page=${page}, amount=${pageVO.amount},
+                                                                                  searchName=${cri.searchName},
+                                                                                  searchContent=${cri.searchContent},
+                                                                                  searchPrice=${cri.searchPrice},
+                                                                                  startDate=${cri.startDate},
+                                                                                  endDate=${cri.endDate}
+                                                                                  )}">[[${page}]]</a>
+                                                    </li>
+                                                </th:block>
+
+                                                <th:block th:if="${pageVO.next}">
+                                                    <li style="margin-left:5px;">
+                                                        <a th:href="@{topicListAll(page=${pageVO.end + 1}, amount=${pageVO.amount},
+                                                                                  searchName=${cri.searchName},
+                                                                                  searchContent=${cri.searchContent},
+                                                                                  searchPrice=${cri.searchPrice},
+                                                                                  startDate=${cri.startDate},
+                                                                                  endDate=${cri.endDate}
+                                                                                  )}"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                                                    </li>
+                                                </th:block>
+
+                                                <li>
+                                                    <a th:href="@{topicListAll(page=${pageVO.realEnd}, amount=${pageVO.amount},
+                                                                                  searchName=${cri.searchName},
+                                                                                  searchContent=${cri.searchContent},
+                                                                                  searchPrice=${cri.searchPrice},
+                                                                                  startDate=${cri.startDate},
+                                                                                  endDate=${cri.endDate}
+                                                                                  )}"><i class="fa fa-angle-double-right" aria-hidden="true"></i></a>
+                                                </li>
+                                            </ul>
+                                        </div>
 									</li>
 
 								</ul>
