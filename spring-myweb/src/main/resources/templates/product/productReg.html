@@ -8,7 +8,7 @@
                     <div class="midiaq">
                         <div class="page_title">상품 관리 > 상품 등록</div>
 
-                        <form name="productForm" th:action="@{/product/prodRegist}" method="post">
+                        <form name="productForm" action="prodRegist" method="post" enctype="multipart/form-data">
                             <div class="full_collum collum">
                                 <ul>
                                     <li class="collum_tit">
@@ -30,7 +30,7 @@
                                                         <th>카테고리</th>
                                                         <td colspan="5" >
 
-                                                            <input type="hidden" name="prod_category" value="">
+                                                            <input type="hidden" name="prodCategory" value="">
 
                                                             <div class="loading" style="display: none;">
                                                                 <div class="loader" ></div>
@@ -39,12 +39,16 @@
 
                                                             <div style="color:red">상품등록 완료 후에는 수정이 불가능하니 신중히 선택해주세요.</div>
                                                             <div class="categoryListWrap">
+
+                                                                <!--
+
                                                                 <ul class="categoryList" style="position: relative;" onclick="getCategory_List(event);" >
                                                                     <li><a href="#" data-set='{"category_lv": "1", "group_id": "A" }'>패션의류</a></li>
                                                                     <li><a href="#" data-set='{"category_lv": "1", "group_id": "B" }'>뷰티</a></li>
                                                                     <li><a href="#" data-set='{"category_lv": "1", "group_id": "C" }'>식품</a></li>
 
                                                                 </ul>
+
                                                                 <ul class="categoryList" style="position: relative;" onclick="getCategory_List(event);">
                                                                     <li><a href="#" data-set='{"category_lv": "2", "group_id": "A" }'>bbb</a></li>
                                                                     <li><a href="#" data-set='{"category_lv": "2", "group_id": "A" }'>bbb</a></li>
@@ -60,6 +64,7 @@
                                                                     <li><a href="#" data-set='{"category_lv": "3", "group_id": "A" }'>ccc</a></li>
 
                                                                 </ul>
+                                                                -->
                                                             </div>
 
                                                         </td>
@@ -185,7 +190,7 @@
                                                     </tr>
                                                     <tr>
                                                         <th>할인율</th>
-                                                        <td colspan="3"><input type="text" class="inputw150" name="prodDiscount" value="0"  placeholder="15(숫자로 입력)">%</td>
+                                                        <td colspan="3"><input type="text" class="inputw150" name="prodDiscount" value=""  placeholder="15(숫자로 입력)">%</td>
                                                     </tr>
 
                                                     <tr>
@@ -194,13 +199,13 @@
                                                             <div class="uInputRadioBox">
                                                                 <div class="uInputRadio">
                                                                     <label>
-                                                                        <input type="radio"  name="prodPurchaseYN" value="N" checked="checked">
+                                                                        <input type="radio"  name="prodPurchaseYn" value="N" checked="checked">
                                                                         <span class="text">제한안함</span>
                                                                     </label>
                                                                 </div>
                                                                 <div class="uInputRadio">
                                                                     <label>
-                                                                        <input type="radio" name="prodPurchaseYN" value="Y" >
+                                                                        <input type="radio" name="prodPurchaseYn" value="Y" >
                                                                         <span class="text">1회 제한</span>
                                                                     </label>
                                                                 </div>
@@ -264,4 +269,31 @@
         </div>
 
 </th:block>
+
+<script>
+    //fetch or 제이쿼리ajax
+    $(document).ready(function() {
+        $.ajax({
+            type: "get",
+            url: "/getCategory",
+            success : function(data) {
+                let categoryStr = '<ul class="categoryList" style="position: relative;" onClick="getCategory_List(event);">';
+                data.forEach( function(item) {
+                    categoryStr += '<li><a href="#" data-set='+ JSON.stringify(item) +'>' + item.categoryDetailNm +'</a></li>';
+                });
+                categoryStr += '</ul>';
+
+                //categoryListWrap 자식으로 ul을 추가
+                $(".categoryListWrap").append(categoryStr);
+
+            },
+            error: function (err) {
+                alert("카테고리 데이터를 불러오는데 문제가 발생했습니다");
+            }
+        })
+    });
+
+</script>
+
+
 </html>

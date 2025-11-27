@@ -28,21 +28,20 @@
 													</tr>
                                                     <tr>
                                                         <th>판매종료일</th>
-                                                        <td><input type="text" class="datepicker" name="prodEnddate"
-                                                                placeholder="날짜선택"
-                                                                th:value="${vo.prodEnddate}"></td>
+                                                        <td><input type="text" class="datepicker" name="prodEnddate" th:value="${vo.prodEnddate}"
+                                                                placeholder="날짜선택"></td>
                                                     </tr>
                                                     <tr>
                                                         <th>카테고리</th>
 
                                                         <td colspan="5">
                                                             <div>수정이 불가능한 옵션입니다(상품관리자에게 문의하세요)</div>
-                                                            대분류 > 중분류 > 소분류
+                                                            [[${vo.categoryNav}]]
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <th>등록자ID</th>
-                                                        <td><input type="text" name="prodWriter" value="정연주" th:value="${vo.prodWriter}" readonly /></td>
+                                                        <td><input type="text" name="prodWriter" th:value="${vo.prodWriter}" readonly /></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">제목(상품명)</th>
@@ -53,42 +52,28 @@
                                                     <tr>
                                                         <th>메인사진</th>
                                                         <td colspan="3">
+
+                                                            [[${fileList}]]
+
                                                             <!--미리보기 폼-->
                                                             <div class="blockContent">
                                                                 <div class="productText">이미지 수정은 목록을 이용해주세요</div>
                                                                 <div class="productImg">
+
+                                                                    <th:block th:each="fileVO : ${fileList}">
                                                                     <div class="imgItem">
                                                                         <span class="imgKind">대표이미지</span>
                                                                         <div class="imgWrap">
                                                                             <div class="imgArea">
-                                                                                <img src="../img/item_main.jpg">
+                                                                                <img th:src="@{/display/{filepath}/{uuid}/{filename}(
+                                                                                    filepath=${fileVO.filepath},
+                                                                                    uuid=${fileVO.uuid},
+                                                                                    filename=${fileVO.filename}
+                                                                                    )}">
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="imgItem">
-                                                                        <span class="imgKind">배너이미지</span>
-                                                                        <div class="imgWrap">
-                                                                            <div class="imgArea">
-                                                                                <img src="../img/item_banner.jpg">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="imgItem">
-                                                                        <span class="imgKind">배너이미지</span>
-                                                                        <div class="imgWrap">
-                                                                            <div class="imgArea">
-                                                                                <img src="../img/item_banner.jpg">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="imgItem">
-                                                                        <span class="imgKind">배너이미지</span>
-                                                                        <div class="imgWrap">
-                                                                            <div class="imgArea">
-                                                                                <img src="../img/item_banner.jpg">
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    </th:block>
                                                                     
                                                                 </div>
                                                             </div>
@@ -102,7 +87,7 @@
                                                     <tr>
                                                         <th>판매수량</th>
                                                         <td colspan="3"><input type="text" class="inputw150" name="prodCount"
-                                                                th:value="${vo.prodPrice}" placeholder="숫자로 입력">개</td>
+                                                                th:value="${vo.prodCount}" placeholder="숫자로 입력">개</td>
                                                     </tr>
                                                     <tr>
                                                         <th>할인율</th>
@@ -124,6 +109,7 @@
                                                                     <label>
                                                                         <input type="radio" name="prodPurchaseYn" value="Y"
                                                                             th:checked="${vo.prodPurchaseYn == 'Y'}">
+
                                                                         <span class="text">1회 제한</span>
                                                                     </label>
                                                                 </div>
@@ -147,8 +133,7 @@
                                                         <td colspan="5">
                                                             <div>
                                                                 <textarea class="inputw99p" name="prodComment"
-                                                                    style="height: 200px;">[[${vo.prodComment}]]
-                                                                </textarea>
+                                                                    style="height: 200px;">[[${vo.prodComment}]]</textarea>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -183,7 +168,7 @@
 <script>
     //수정기능
     let saveBtn = document.getElementById("save");
-    saveBtn.addEventListener("click", function () {
+    saveBtn.addEventListener("click", function() {
         event.preventDefault(); //a가 가진 기본이벤트 삭제
         document.actionForm.action = "productUpdate"; //form의 action값 수정
         document.actionForm.submit(); //폼 전송
@@ -191,11 +176,15 @@
 
     //삭제기능
     let deleteBtn = document.getElementById("delete");
-    deleteBtn.addEventListener("click", function () {
-        event.preventDefault();
+    deleteBtn.addEventListener("click", function() {
+        event.preventDefault(); //a가 가진 기본이벤트 삭제
         document.actionForm.action = "productDelete";
-        document.actionForm.submit();
+        document.actionForm.submit(); //폼 전송
     })
+
 </script>
+
+
+
 
 </html>

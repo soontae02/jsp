@@ -1,5 +1,6 @@
 package com.coding404.myweb.contorller;
 
+import com.coding404.myweb.command.ProductUploadVO;
 import com.coding404.myweb.command.ProductVO;
 import com.coding404.myweb.product.ProductService;
 import com.coding404.myweb.util.Criteria;
@@ -9,9 +10,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/product")
@@ -24,20 +27,17 @@ public class ProductController {
     //목록화면
     @GetMapping("/productList")
     public String productList(@ModelAttribute("cri") Criteria cri, Model model) {
-        String prodWriter = "becy96"; //본인의 아이디라고 가정
 
-        System.out.println(cri.getPage());
+        String prodWriter = "coding404"; //본인의 아이디라고 가정
 
-        //List<ProductVO> prodList = productService.getList(prodWriter); //조회
-        List<ProductVO> prodList = productService.getList(prodWriter, cri);
+        //List<ProductVO> prodList  = productService.getList(prodWriter); //조회
+        List<ProductVO> prodList  = productService.getList(prodWriter, cri); //조회
         int total = productService.getTotal(prodWriter, cri); //전체게시글 수
 
         PageVO pageVO = new PageVO(cri, total); //페이지네이션 계산
 
-        model.addAttribute("prodList", prodList); //모델에 저장
-        model.addAttribute("pageVO", pageVO); //모델에 저장
-
-        System.out.println(prodList.toString());
+        model.addAttribute("prodList",prodList); //모델에 저장
+        model.addAttribute("pageVO",pageVO); //모델에 저장
 
         return "product/productList";
     }
@@ -46,43 +46,48 @@ public class ProductController {
     public String productReg() {
         return "product/productReg";
     }
+
     //상세화면
     @GetMapping("/productDetail")
     public String productDetail(@RequestParam("prodId") long prodId,
                                 Model model) {
 
         ProductVO vo = productService.getDetail(prodId);
-        model.addAttribute("vo", vo);
+        List<ProductVO> fileList = productService.getDetailFile(prodId);
+
+        model.addAttribute("vo",vo);
+        model.addAttribute("fileList",fileList);
 
         return "product/productDetail";
     }
     //상품등록
     @PostMapping("/prodRegist")
     public String prodRegist(ProductVO productVO,
-                             RedirectAttributes ra) {
+                             RedirectAttributes ra,
+                             @RequestParam("file") List<MultipartFile> files) { //파일데이터
 
-        int result = productService.prodRegist(productVO); //성공시 1, 실패시 0
-        if (result == 1) {
+        //빈 파일데이터 제거
+        //멀티파트파일.getContentType() - 이미지 데이터만 올라올수 있도록 처리
+        files = files.stream()
+                .filter( data -> data.isEmpty() == false)
+                .collect(Collectors.toList());
+
+
+        int result = productService.prodRegist(productVO, files); //성공시1, 실패시 0
+        if(result == 1) {
             ra.addFlashAttribute("msg", "상품이 정상 등록 되었습니다.");
         } else {
-            ra.addFlashAttribute("msg", "상품 등록에 실패했습니다. 관리자에 1552-3322로 연락주세요.");
+            ra.addFlashAttribute("msg", "상품 등록에 실패했습니다. 관리자 1552-3322로 연락해주세요.");
         }
+
 
         return "redirect:/product/productList";
     }
 
     //상품수정
     @PostMapping("/productUpdate")
-    public String productUpdate(ProductVO productVO,
-                                RedirectAttributes ra) {
-
+    public String productUpdate(ProductVO productVO) {
         int result = productService.prodUpdate(productVO); //성공시 1, 실패시 0
-        if (result == 1) {
-            ra.addFlashAttribute("msg", "상품이 정상 등록 되었습니다.");
-        } else {
-            ra.addFlashAttribute("msg", "상품 등록에 실패했습니다. 관리자에 1552-3322로 연락주세요.");
-        }
-
         return "redirect:/product/productDetail?prodId=" + productVO.getProdId(); //수정이후에, 상세화면으로
     }
 
@@ -92,10 +97,11 @@ public class ProductController {
                                 RedirectAttributes ra) {
 
         int result = productService.prodDelete(prodId);
-        if (result == 1) {
-            ra.addFlashAttribute("msg", "상품이 삭제되었습니다.");
+
+        if(result == 1) {
+            ra.addFlashAttribute("msg", "상품이 삭제되었습니다");
         } else {
-            ra.addFlashAttribute("msg", "상품 삭제에 실패하였습니다.");
+            ra.addFlashAttribute("msg", "상품삭제에 실패했습니다. 관리자에게 문의하세요");
         }
 
         return "redirect:/product/productList";
@@ -104,3 +110,14 @@ public class ProductController {
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
